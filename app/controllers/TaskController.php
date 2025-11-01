@@ -16,9 +16,15 @@ class TaskController {
         }
     }
     
+    public function __construct() {
+        
+        Auth::startSession(); 
+    }
  
     public function index() {
        
+        Auth::requireLogin();
+        
         $taskModel = new TaskModel();
         
         $tasks = $taskModel->getAllTasks();
