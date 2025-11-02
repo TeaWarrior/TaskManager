@@ -62,4 +62,58 @@ class TaskController {
         header('Location: /');
         exit;
     }
+
+    public function edit($id) {
+        Auth::requireLogin();
+        
+        $taskModel = new TaskModel();
+        $task = $taskModel->getTaskById($id); 
+        
+        if (!$task) {
+            header('Location: /'); 
+            exit;
+        }
+        
+        $this->render('task/edit', ['task' => $task, 'error' => '']);
+    }
+
+    public function update($id) {
+        Auth::requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /task/edit/' . $id);
+            return;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+       
+        $isCompleted = isset($_POST['is_completed']) ? 1 : 0; 
+        
+        if (empty($title)) {
+           
+            $taskModel = new TaskModel();
+            $task = $taskModel->getTaskById($id);
+            $this->render('task/edit', ['task' => $task, 'error' => 'Title cannot be empty.']);
+            return;
+        }
+        
+        $taskModel = new TaskModel();
+        $taskModel->update($id, $title, $description, $isCompleted);
+        
+        header('Location: /'); 
+        exit;
+    }
+
+    public function delete($id) {
+        Auth::requireLogin();
+        
+       
+        
+        $taskModel = new TaskModel();
+        $taskModel->delete($id);
+        
+        header('Location: /');
+        exit;
+    }
 }

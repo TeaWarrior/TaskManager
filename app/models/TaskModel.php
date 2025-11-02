@@ -29,4 +29,18 @@ class TaskModel {
         return $this->db->query($sql, [$title, $description]);
     }
 
+    public function update($id, $title, $description, $isCompleted) {
+        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";
+        
+       
+        $isCompleted = (int)$isCompleted; 
+        
+        return $this->db->query($sql, [$title, $description, $isCompleted, $id]);
+    }
+
+    public function delete($id) {
+        $sql = "DELETE FROM tasks WHERE id = ?";
+        return $this->db->query($sql, [$id]);
+    }
+
 }
