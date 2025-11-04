@@ -10,6 +10,7 @@
 
 <?php if (empty($tasks)): ?>
         <p>No tasks found. Go ahead and add one!</p>
+        <p><a href="/task/add">Add New Task</a></p>
     <?php else: ?>
         <ul>
             <?php foreach ($tasks as $task): ?>
@@ -29,6 +30,6 @@
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>
-
+<a href="/task/add" class="btn">Add New Task</a>
 </body>
 </html>
