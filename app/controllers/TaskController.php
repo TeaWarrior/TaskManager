@@ -5,16 +5,22 @@ class TaskController {
     
     
     private function render($viewPath, $data = []) {
-        extract($data); 
-        $filePath = ROOT_PATH . '/app/Views/' . $viewPath . '.php';
+    extract($data); 
+    $contentPath = ROOT_PATH . '/app/Views/' . $viewPath . '.php';
 
-        if (file_exists($filePath)) {
-            require $filePath;
-        } else {
-          
-            die("Error: View file **$filePath** not found."); 
-        }
+    if (!file_exists($contentPath)) {
+        die("Error: View file **$contentPath** not found."); 
     }
+    $layoutPath = ROOT_PATH . '/app/Views/layout/main.php';
+
+    if (file_exists($layoutPath)) {
+        require $layoutPath; 
+    } else {
+        require $contentPath; 
+    }
+    }
+
+    
     
     public function __construct() {
         

@@ -29,7 +29,8 @@
                 </li>
             <?php endforeach; ?>
         </ul>
+        <a href="/task/add" class="btn">Add New Task</a>
     <?php endif; ?>
-<a href="/task/add" class="btn">Add New Task</a>
+
 </body>
 </html>
