@@ -8,21 +8,28 @@
 
     <h1>Task List</h1>
 
-    <?php if (empty($tasks)): ?>
-        <p>No tasks found.</p>
+<?php if (empty($tasks)): ?>
+        <p>No tasks found. Go ahead and add one!</p>
+        <p><a href="/task/add">Add New Task</a></p>
     <?php else: ?>
         <ul>
             <?php foreach ($tasks as $task): ?>
                 <li>
-                    <strong>ID #<?php echo htmlspecialchars($task['id']); ?>:</strong> 
-                    <?php echo htmlspecialchars($task['title']); ?>
-                    
-                    (<?php echo $task['is_completed'] ? 'Completed ✅' : 'Pending ⏳'; ?>)
+                    <strong><?php echo htmlspecialchars($task['title']); ?></strong>
+                    (<?php echo $task['is_completed'] ? '✅ Completed' : '⏳ Pending'; ?>)
                     <br>
                     <small><?php echo htmlspecialchars($task['description']); ?></small>
+                    
+                    **[<a href="/task/edit/<?php echo htmlspecialchars($task['id']); ?>">Edit</a>]**
+                    **[**
+                        **<form style="display:inline;" method="POST" action="/task/delete/<?php echo htmlspecialchars($task['id']); ?>" onsubmit="return confirm('Are you sure?');">**
+                            **<button type="submit" style="background:none;border:none;color:red;padding:0;cursor:pointer;">Delete</button>**
+                        **</form>**
+                    **]**
                 </li>
             <?php endforeach; ?>
         </ul>
+        <a href="/task/add" class="btn">Add New Task</a>
     <?php endif; ?>
 
 </body>
