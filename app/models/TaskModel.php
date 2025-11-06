@@ -24,9 +24,9 @@ class TaskModel {
         return $stmt->fetch();
     }
 
-    public function create($title, $description) {
-        $sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
-        return $this->db->query($sql, [$title, $description]);
+    public function create($title, $description ,$priority) {
+        $sql = "INSERT INTO tasks (title, description, priority) VALUES (?, ?, ?)";
+        return $this->db->query($sql, [$title, $description,$priority]);
     }
 
     public function update($id, $title, $description, $isCompleted) {
