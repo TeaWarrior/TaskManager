@@ -12,8 +12,44 @@
 </head>
 <body>
 
-    <header class="mb-4">
-        </header>
+   <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Task Manager</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/task/index">Список задач</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/add">Добавить задачу</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/task/completed">Завершенные задачи</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Выход</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
 
     <main class="container">
         <?php 

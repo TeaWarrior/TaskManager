@@ -55,14 +55,14 @@ class TaskController {
         
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
-
+        $priority = $_POST['priority'] ?? 'Medium';
         if (empty($title)) {
             $this->render('task/add', ['error' => 'Task title cannot be empty.']);
             return;
         }
         
         $taskModel = new TaskModel();
-        $taskModel->create($title, $description);
+        $taskModel->create($title, $description,$priority);
         
         
         header('Location: /');
@@ -122,4 +122,11 @@ class TaskController {
         header('Location: /');
         exit;
     }
+
+    public function completed() {
+    Auth::requireLogin();
+    $model = new TaskModel();
+    $completedTasks = $model->getCompletedTasks(); 
+    $this->render('task/completed', ['tasks' => $completedTasks]);
+      } 
 }

@@ -28,6 +28,14 @@
             <input type="checkbox" id="is_completed" name="is_completed" 
                    <?php echo $task['is_completed'] ? 'checked' : ''; ?>>
         </div>
+        <div class="mb-3">
+    <label for="priority" class="form-label">Приоритет</label>
+    <select class="form-select" id="priority" name="priority" required>
+        <option value="High">High</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="Low">Low</option>
+    </select>
+</div>
         <button type="submit">Update Task</button>
     </form>
 

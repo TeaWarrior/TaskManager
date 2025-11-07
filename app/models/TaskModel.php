@@ -10,9 +10,8 @@ class TaskModel {
 
 
     public function getAllTasks() {
-        $sql = "SELECT * FROM tasks ORDER BY created_at DESC";
+        $sql = "SELECT * FROM tasks WHERE is_completed = 0 ORDER BY created_at DESC";
         $stmt = $this->db->query($sql);
-
         return $stmt->fetchAll();
     }
 
@@ -20,21 +19,17 @@ class TaskModel {
     public function getTaskById($id) {
         $sql = "SELECT * FROM tasks WHERE id = ?";
         $stmt = $this->db->query($sql, [$id]);
-
         return $stmt->fetch();
     }
 
-    public function create($title, $description) {
-        $sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
-        return $this->db->query($sql, [$title, $description]);
+    public function create($title, $description ,$priority) {
+        $sql = "INSERT INTO tasks (title, description, priority) VALUES (?, ?, ?)";
+        return $this->db->query($sql, [$title, $description,$priority]);
     }
 
     public function update($id, $title, $description, $isCompleted) {
-        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";
-        
-       
+        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";     
         $isCompleted = (int)$isCompleted; 
-        
         return $this->db->query($sql, [$title, $description, $isCompleted, $id]);
     }
 
@@ -42,5 +37,12 @@ class TaskModel {
         $sql = "DELETE FROM tasks WHERE id = ?";
         return $this->db->query($sql, [$id]);
     }
+
+    public function getCompletedTasks() {
+
+    $sql = "SELECT id, title, description, priority FROM tasks WHERE is_completed = 1 ORDER BY id DESC";
+    $stmt = $this->db->query($sql);
+    return $stmt->fetchAll(); 
+}
 
 }

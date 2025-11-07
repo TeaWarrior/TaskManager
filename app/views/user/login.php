@@ -1,31 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white text-center">
+                <h1 class="h3 mb-0">User Login</h1>
+            </div>
+            <div class="card-body">
 
-    <h1>User Login</h1>
+                <?php if (isset($error) && $error): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo htmlspecialchars($error); ?>
+                    </div>
+                <?php endif; ?>
 
-    <?php if (isset($error) && $error): ?>
-        <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
-    <?php endif; ?>
+                <form method="POST" action="/user/authenticate">
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username:</label>
+                        <input type="text" id="username" name="username" required 
+                               class="form-control"
+                               value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password:</label>
+                        <input type="password" id="password" name="password" required 
+                               class="form-control">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
 
-    <form method="POST" action="/user/authenticate">
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required 
-                   value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
+                <hr>
+                
+                <p class="text-center">
+                    Don't have an account? 
+                    <a href="/user/register" class="btn btn-sm btn-outline-secondary">Register here</a>
+                </p>
+
+            </div>
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">Login</button>
-    </form>
-    
-    <p>Don't have an account? <a href="/user/register">Register here</a></p>
-
-</body>
-</html>
+    </div>
+</div>

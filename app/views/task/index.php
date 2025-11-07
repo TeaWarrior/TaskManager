@@ -1,36 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Task Manager - All Tasks</title>
-</head>
-<body>
-
-    <h1>Task List</h1>
+<h1 class="mb-4">Task List</h1>
 
 <?php if (empty($tasks)): ?>
-        <p>No tasks found. Go ahead and add one!</p>
-        <p><a href="/task/add">Add New Task</a></p>
-    <?php else: ?>
-        <ul>
-            <?php foreach ($tasks as $task): ?>
-                <li>
-                    <strong><?php echo htmlspecialchars($task['title']); ?></strong>
-                    (<?php echo $task['is_completed'] ? '✅ Completed' : '⏳ Pending'; ?>)
-                    <br>
-                    <small><?php echo htmlspecialchars($task['description']); ?></small>
-                    
-                    **[<a href="/task/edit/<?php echo htmlspecialchars($task['id']); ?>">Edit</a>]**
-                    **[**
-                        **<form style="display:inline;" method="POST" action="/task/delete/<?php echo htmlspecialchars($task['id']); ?>" onsubmit="return confirm('Are you sure?');">**
-                            **<button type="submit" style="background:none;border:none;color:red;padding:0;cursor:pointer;">Delete</button>**
-                        **</form>**
-                    **]**
-                </li>
-            <?php endforeach; ?>
-        </ul>
-        <a href="/task/add" class="btn">Add New Task</a>
-    <?php endif; ?>
+    <div class="alert alert-info" role="alert">
+        No tasks found. Go ahead and add one! 
+        <a href="/task/add" class="btn btn-sm btn-success ms-3">Add New Task</a>
+    </div>
+<?php else: ?>
 
-</body>
-</html>
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+            <?php foreach ($tasks as $task): ?>
+            
+            <tr>
+                <td><?= htmlspecialchars($task['title']) ?></td>
+
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-info" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#descriptionModal<?= $task['id'] ?>">
+                        Показать описание
+                    </button>
+                </td>
+
+                <td>
+                    <?php 
+                        $color = 'bg-secondary';
+                        if ($task['priority'] === 'High') {
+                            $color = 'bg-danger'; // Красный
+                        } elseif ($task['priority'] === 'Medium') {
+                            $color = 'bg-warning'; // Оранжевый/Желтый
+                        } elseif ($task['priority'] === 'Low') {
+                            $color = 'bg-success'; // Зеленый
+                        }
+                    ?>
+                    <span class="badge rounded-pill <?= $color ?>" 
+                          data-bs-toggle="tooltip" data-bs-placement="top" title="<?= $task['priority'] ?>">
+                        &nbsp;&nbsp;
+                    </span>
+                </td>
+
+                <td> <!-- Action -->
+                    <a href="/task/edit/<?= $task['id'] ?>" class="btn btn-sm btn-warning me-2" title="Edit Task">
+                        Edit
+                    </a>
+                    
+                    <a href="/task/delete/<?= $task['id'] ?>" class="btn btn-sm btn-danger" title="Delete Task" 
+                       onclick="return confirm('Are you sure you want to delete this task?');">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+
+                    </td>
+            </tr>
+            
+            <div class="modal fade" id="descriptionModal<?= $task['id'] ?>" tabindex="-1" aria-labelledby="descriptionModalLabel<?= $task['id'] ?>" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="descriptionModalLabel<?= $task['id'] ?>">
+                        Полное описание: **<?= htmlspecialchars($task['title']) ?>**
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <?= nl2br(htmlspecialchars($task['description'])) ?>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <?php endforeach; ?>
+            
+        </tbody>
+    </table>
+    
+    <a href="/task/add" class="btn btn-primary">Add New Task</a>
+    
+<?php endif; ?>
