@@ -30,10 +30,11 @@ class TaskController {
     public function index() {
        
         Auth::requireLogin();
-
+        $userId = Auth::userId();
+        
         $taskModel = new TaskModel();
         
-        $tasks = $taskModel->getAllTasks();
+        $tasks = $taskModel->getAllTasks($userId);
      
         $this->render('task/index', ['tasks' => $tasks]);
 
@@ -47,7 +48,7 @@ class TaskController {
     
     public function store() {
         Auth::requireLogin(); 
-        
+        $userId = Auth::userId();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /task/add');
             return;
@@ -62,7 +63,7 @@ class TaskController {
         }
         
         $taskModel = new TaskModel();
-        $taskModel->create($title, $description,$priority);
+        $taskModel->create($title, $description,$priority,$userId);
         
         
         header('Location: /');
@@ -125,8 +126,9 @@ class TaskController {
 
     public function completed() {
     Auth::requireLogin();
+    $userId = Auth::userId();
     $model = new TaskModel();
-    $completedTasks = $model->getCompletedTasks(); 
+    $completedTasks = $model->getCompletedTasks($userId); 
     $this->render('task/completed', ['tasks' => $completedTasks]);
       } 
 }

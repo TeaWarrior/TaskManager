@@ -9,9 +9,9 @@ class TaskModel {
     }
 
 
-    public function getAllTasks() {
-        $sql = "SELECT * FROM tasks WHERE is_completed = 0 ORDER BY created_at DESC";
-        $stmt = $this->db->query($sql);
+    public function getAllTasks($userId) {
+      $sql = "SELECT * FROM tasks WHERE is_completed = 0 AND user_id = ? ORDER BY created_at DESC"; 
+      $stmt = $this->db->query($sql, [$userId]);
         return $stmt->fetchAll();
     }
 
@@ -22,26 +22,36 @@ class TaskModel {
         return $stmt->fetch();
     }
 
-    public function create($title, $description ,$priority) {
-        $sql = "INSERT INTO tasks (title, description, priority) VALUES (?, ?, ?)";
-        return $this->db->query($sql, [$title, $description,$priority]);
+    public function create($title, $description ,$priority,$userId) {
+        $sql = "INSERT INTO tasks (title, description, priority, user_id) VALUES (?, ?, ?, ?)"; 
+        return $this->db->query($sql, [$title, $description, $priority, $userId]);
     }
 
     public function update($id, $title, $description, $isCompleted) {
-        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";     
-        $isCompleted = (int)$isCompleted; 
-        return $this->db->query($sql, [$title, $description, $isCompleted, $id]);
+  
+    $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ?";
+    $params = [$title, $description, (int)$isCompleted];
+    
+    if ((int)$isCompleted === 1) {
+        
+        $sql .= ", completed_at = NOW()";
+    } else {
+        $sql .= ", completed_at = NULL";
     }
+    $sql .= " WHERE id = ?";
+    $params[] = $id; 
+    return $this->db->query($sql, $params);
+}
 
     public function delete($id) {
         $sql = "DELETE FROM tasks WHERE id = ?";
         return $this->db->query($sql, [$id]);
     }
 
-    public function getCompletedTasks() {
+    public function getCompletedTasks($userId) {
 
-    $sql = "SELECT id, title, description, priority FROM tasks WHERE is_completed = 1 ORDER BY id DESC";
-    $stmt = $this->db->query($sql);
+    $sql = "SELECT id, title, description, priority, completed_at FROM tasks WHERE is_completed = 1 AND user_id = ? ORDER BY completed_at DESC";
+    $stmt = $this->db->query($sql, [$userId]);
     return $stmt->fetchAll(); 
 }
 
