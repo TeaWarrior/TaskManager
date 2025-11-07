@@ -10,9 +10,8 @@ class TaskModel {
 
 
     public function getAllTasks() {
-        $sql = "SELECT * FROM tasks ORDER BY created_at DESC";
+        $sql = "SELECT * FROM tasks WHERE is_completed = 0 ORDER BY created_at DESC";
         $stmt = $this->db->query($sql);
-
         return $stmt->fetchAll();
     }
 
@@ -20,7 +19,6 @@ class TaskModel {
     public function getTaskById($id) {
         $sql = "SELECT * FROM tasks WHERE id = ?";
         $stmt = $this->db->query($sql, [$id]);
-
         return $stmt->fetch();
     }
 
@@ -41,6 +39,7 @@ class TaskModel {
     }
 
     public function getCompletedTasks() {
+
     $sql = "SELECT id, title, description, priority FROM tasks WHERE is_completed = 1 ORDER BY id DESC";
     $stmt = $this->db->query($sql);
     return $stmt->fetchAll(); 
