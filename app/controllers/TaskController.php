@@ -124,7 +124,7 @@ class TaskController {
     }
 
     public function completed() {
- 
+ Auth::requireLogin();
     $model = new TaskModel();
     $completedTasks = $model->getCompletedTasks(); 
     $this->render('task/completed', ['tasks' => $completedTasks]);
