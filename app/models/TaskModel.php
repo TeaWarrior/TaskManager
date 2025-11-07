@@ -30,11 +30,8 @@ class TaskModel {
     }
 
     public function update($id, $title, $description, $isCompleted) {
-        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";
-        
-       
+        $sql = "UPDATE tasks SET title = ?, description = ?, is_completed = ? WHERE id = ?";     
         $isCompleted = (int)$isCompleted; 
-        
         return $this->db->query($sql, [$title, $description, $isCompleted, $id]);
     }
 
@@ -42,5 +39,11 @@ class TaskModel {
         $sql = "DELETE FROM tasks WHERE id = ?";
         return $this->db->query($sql, [$id]);
     }
+
+    public function getCompletedTasks() {
+    $sql = "SELECT id, title, description, priority FROM tasks WHERE is_completed = 1 ORDER BY id DESC";
+    $stmt = $this->db->query($sql);
+    return $stmt->fetchAll(); 
+}
 
 }

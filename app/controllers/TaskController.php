@@ -122,4 +122,11 @@ class TaskController {
         header('Location: /');
         exit;
     }
+
+    public function completed() {
+ 
+    $model = new TaskModel();
+    $completedTasks = $model->getCompletedTasks(); 
+    $this->render('task/completed', ['tasks' => $completedTasks]);
+      } 
 }
