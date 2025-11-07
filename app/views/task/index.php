@@ -48,7 +48,18 @@
                     </span>
                 </td>
 
-                <td>
+                <td> <!-- Action -->
+                    <a href="/task/edit/<?= $task['id'] ?>" class="btn btn-sm btn-warning me-2" title="Edit Task">
+                        Edit
+                    </a>
+                    
+                    <a href="/task/delete/<?= $task['id'] ?>" class="btn btn-sm btn-danger" title="Delete Task" 
+                       onclick="return confirm('Are you sure you want to delete this task?');">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+
                     </td>
             </tr>
             
