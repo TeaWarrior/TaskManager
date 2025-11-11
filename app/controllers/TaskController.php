@@ -227,6 +227,43 @@ class TaskController {
     exit;
     }
 
+    public function apiDelete($id) { 
+    Auth::requireLogin();
+    header('Content-Type: application/json');
+    
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') { 
+        header('HTTP/1.1 405 Method Not Allowed');
+        echo json_encode(['status' => 'error', 'message' => 'Method Not Allowed.']);
+        return;
+    }
+
+    try {
+        $taskModel = new TaskModel();
+        
+        
+        $task = $taskModel->getTaskById($id);
+        if (!$task || (int)$task['user_id'] !== Auth::userId()) {
+            header('HTTP/1.1 404 Not Found');
+            echo json_encode(['status' => 'error', 'message' => 'Task not found or unauthorized.']);
+            exit;
+        }
+        
+        
+        $taskModel->delete($id);
+
+        
+        header('HTTP/1.1 200 OK');
+        echo json_encode(['status' => 'success', 'message' => 'Task deleted successfully.']);
+
+    } catch (\Exception $e) {
+        header('HTTP/1.1 500 Internal Server Error');
+        echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+    }
+
+    exit;
+}
+
     public function delete($id) {
         Auth::requireLogin();
         

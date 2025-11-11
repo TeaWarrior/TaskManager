@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             colorClass = 'bg-success';
         }
 
-        
+      
         const isCompleted = task.is_completed == 1;
         let completeButtonHtml = '';
         
@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </button>
             `;
         }
-       
-
+        
+      
         return `
             <tr data-task-id="${task.id}">
                 <td>
@@ -53,13 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="/task/edit/${task.id}" class="btn btn-sm btn-warning me-2" title="Edit Task">
                         Edit
                     </a>
-                    <a href="/task/delete/${task.id}" class="btn btn-sm btn-danger" title="Delete Task" 
-                       onclick="return confirm('Are you sure you want to delete this task?');">
+                    <a href="/task/delete/${task.id}" class="btn btn-sm btn-danger delete-btn" title="Delete Task"> 
                         Delete
                     </a>
                 </td>
             </tr>
         `;
+       
     }
 
     
@@ -135,23 +135,64 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Ошибка обновления статуса: ' + error.message);
         }
     }
-
+    
    
+    async function deleteTask(taskId) {
+        try {
+            const response = await fetch(`/task/apiDelete/${taskId}`, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json' 
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.status === 'success') {
+                alert(`Задача ${taskId} успешно удалена.`);
+                
+            
+                fetchTasks(); 
+            } else {
+                throw new Error(result.message || 'Failed to delete task.');
+            }
+
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Ошибка при удалении задачи: ' + error.message);
+        }
+    }
+   
+
+    
     fetchTasks();
 
     tableBody.addEventListener('click', (e) => {
         const target = e.target;
         
+        
         if (target.classList.contains('complete-btn')) {
-           
+            
             const taskId = target.dataset.id;
             const newStatus = target.dataset.status; 
-            
             
             if (confirm(`Вы уверены, что хотите завершить эту задачу?`)) { 
                 toggleComplete(taskId, parseInt(newStatus)); 
             }
+        } 
+        
+       
+        else if (target.classList.contains('delete-btn') || target.title === 'Delete Task') {
+             e.preventDefault(); 
+             
+             const href = target.getAttribute('href'); 
+             const taskId = href.substring(href.lastIndexOf('/') + 1);
+             
+             if (confirm('Вы уверены, что хотите удалить эту задачу? Это действие необратимо!')) {
+                 deleteTask(taskId);
+             }
         }
+       
     });
 
 });
