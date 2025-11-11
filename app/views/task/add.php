@@ -13,7 +13,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="/task/store">
+        <form id="task-form" method="POST">
             
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
@@ -38,3 +38,5 @@
         </form>
     </div>
 </div>
+
+<script src="/js/add.js"></script>

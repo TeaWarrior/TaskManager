@@ -67,6 +67,48 @@ class TaskController {
         $this->render('task/add', ['error' => '']);
     }
 
+    public function apistore() { 
+    Auth::requireLogin();
+    $userId = Auth::userId();
+    
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        
+        header('HTTP/1.1 405 Method Not Allowed');
+        return;
+    }
+    
+    $json_data = file_get_contents('php://input');
+    $data = json_decode($json_data, true); 
+
+    $title = trim($data['title'] ?? '');
+    $description = trim($data['description'] ?? '');
+    $priority = $data['priority'] ?? 'Medium';
+    
+    if (empty($title)) {
+        header('HTTP/1.1 400 Bad Request');
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Title is required.']);
+        exit;
+    }
+
+    try {
+        $taskModel = new TaskModel();
+        $newTask = $taskModel->create($title, $description, $priority, $userId);
+
+        header('HTTP/1.1 201 Created'); 
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'message' => 'Task created successfully.', 'data' => $newTask]);
+
+    } catch (\Exception $e) {
+        
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+    }
+
+    exit;
+    }
     
     public function store() {
         Auth::requireLogin(); 
