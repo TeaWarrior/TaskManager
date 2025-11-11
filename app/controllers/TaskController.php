@@ -176,6 +176,57 @@ class TaskController {
         exit;
     }
 
+    
+    public function apiToggleComplete($id) { 
+    Auth::requireLogin();
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') { 
+        header('HTTP/1.1 405 Method Not Allowed');
+        return;
+    }
+    
+  
+    $json_data = file_get_contents('php://input');
+    $data = json_decode($json_data, true); 
+
+    $isCompleted = isset($data['is_completed']) ? (int)$data['is_completed'] : null; 
+    
+    if (!in_array($isCompleted, [0, 1])) {
+        header('HTTP/1.1 400 Bad Request');
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Invalid is_completed value.']);
+        exit;
+    }
+
+    try {
+        $taskModel = new TaskModel();
+       
+        $task = $taskModel->getTaskById($id);
+        if (!$task || (int)$task['user_id'] !== Auth::userId()) {
+            header('HTTP/1.1 404 Not Found');
+            echo json_encode(['status' => 'error', 'message' => 'Task not found or unauthorized.']);
+            exit;
+        }
+        
+        $success = $taskModel->toggleCompleteStatus($id, $isCompleted);
+
+        if ($success) {
+            header('HTTP/1.1 200 OK');
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Task status updated.']);
+        } else {
+             throw new \Exception("Database update failed.");
+        }
+
+    } catch (\Exception $e) {
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+    }
+
+    exit;
+    }
+
     public function delete($id) {
         Auth::requireLogin();
         

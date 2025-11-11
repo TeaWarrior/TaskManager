@@ -41,7 +41,7 @@ class TaskModel {
     $sql .= " WHERE id = ?";
     $params[] = $id; 
     return $this->db->query($sql, $params);
-}
+    }
 
     public function delete($id) {
         $sql = "DELETE FROM tasks WHERE id = ?";
@@ -53,6 +53,31 @@ class TaskModel {
     $sql = "SELECT id, title, description, priority, completed_at FROM tasks WHERE is_completed = 1 AND user_id = ? ORDER BY completed_at DESC";
     $stmt = $this->db->query($sql, [$userId]);
     return $stmt->fetchAll(); 
-}
+    }
+
+    
+
+    public function toggleCompleteStatus($id, $isCompleted) {
+    
+    $sql = "UPDATE tasks SET is_completed = ?";
+    $params = [(int)$isCompleted];
+    
+    
+    if ((int)$isCompleted === 1) {
+        
+        $sql .= ", completed_at = NOW()";
+    } else {
+        
+        $sql .= ", completed_at = NULL";
+    }
+    
+    
+    $sql .= " WHERE id = ?";
+    $params[] = $id; 
+    
+    return $this->db->query($sql, $params);
+    }
+
+
 
 }

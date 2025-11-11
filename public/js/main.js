@@ -1,6 +1,6 @@
 // app/Views/js/main.js
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => { 
     
     const tableBody = document.getElementById('tasks-body');
     const emptyMessage = document.getElementById('empty-list-message');
@@ -18,8 +18,22 @@ document.addEventListener('DOMContentLoaded', () => {
             colorClass = 'bg-success';
         }
 
+        
+        const isCompleted = task.is_completed == 1;
+        let completeButtonHtml = '';
+        
+        if (!isCompleted) {
+             completeButtonHtml = `
+                <button type="button" class="btn btn-sm btn-success complete-btn me-2" 
+                        data-id="${task.id}" data-status="1"> 
+                    Complete
+                </button>
+            `;
+        }
+       
+
         return `
-            <tr>
+            <tr data-task-id="${task.id}">
                 <td>
                     ${task.title}
                     <button type="button" class="btn btn-sm btn-outline-info ms-2" disabled>
@@ -34,6 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
                 
                 <td>
+                    ${completeButtonHtml}
+                    
                     <a href="/task/edit/${task.id}" class="btn btn-sm btn-warning me-2" title="Edit Task">
                         Edit
                     </a>
@@ -61,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-   
+    
     async function fetchTasks() {
         
         tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading tasks...</td></tr>`;
@@ -93,5 +109,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     
+    async function toggleComplete(taskId, newStatus) {
+        try {
+            const response = await fetch(`/task/apiToggleComplete/${taskId}`, {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_completed: newStatus })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.status === 'success') {
+                
+                alert(`Задача ${taskId} успешно завершена!`); 
+                
+                fetchTasks(); 
+            } else {
+                throw new Error(result.message || 'Failed to update status.');
+            }
+
+        } catch (error) {
+            console.error('Toggle complete error:', error);
+            alert('Ошибка обновления статуса: ' + error.message);
+        }
+    }
+
+   
     fetchTasks();
+
+    tableBody.addEventListener('click', (e) => {
+        const target = e.target;
+        
+        if (target.classList.contains('complete-btn')) {
+           
+            const taskId = target.dataset.id;
+            const newStatus = target.dataset.status; 
+            
+            
+            if (confirm(`Вы уверены, что хотите завершить эту задачу?`)) { 
+                toggleComplete(taskId, parseInt(newStatus)); 
+            }
+        }
+    });
+
 });
