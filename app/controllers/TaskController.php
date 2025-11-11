@@ -40,6 +40,28 @@ class TaskController {
 
     }
 
+    public function apiindex() {
+    Auth::requireLogin(); 
+    $userId = Auth::userId();
+    try {
+        
+        $taskModel = new TaskModel();
+        $tasks = $taskModel->getAllTasks($userId);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'count' => count($tasks),
+            'data' => $tasks
+        ]);
+
+    } catch (\Exception $e) {
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+    }
+    exit;
+    }
+
     public function add() {
         Auth::requireLogin(); 
         $this->render('task/add', ['error' => '']);
