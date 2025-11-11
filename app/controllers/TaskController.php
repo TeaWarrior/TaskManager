@@ -94,7 +94,7 @@ class TaskController {
 
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
-       
+        $priority = $_POST['priority'] ?? 'Medium';
         $isCompleted = isset($_POST['is_completed']) ? 1 : 0; 
         
         if (empty($title)) {
@@ -106,7 +106,7 @@ class TaskController {
         }
         
         $taskModel = new TaskModel();
-        $taskModel->update($id, $title, $description, $isCompleted);
+        $taskModel->update($id, $title, $description, $priority, $isCompleted);
         
         header('Location: /'); 
         exit;
