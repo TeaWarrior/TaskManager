@@ -14,7 +14,7 @@
             </div>
         <?php endif; ?>
 
-        <form method="POST" action="/task/update/<?php echo htmlspecialchars($task['id']); ?>">
+        <form id="edit-task-form" method="post">
             
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
@@ -47,3 +47,7 @@
         
     </div>
 </div>
+
+
+
+<script src="/js/edit.js"></script>

@@ -149,32 +149,63 @@ class TaskController {
     }
 
     public function update($id) {
-        Auth::requireLogin();
-        
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /task/edit/' . $id);
-            return;
-        }
+    Auth::requireLogin();
+    $taskModel = new TaskModel();
+    $task = $taskModel->getTaskById($id);
 
-        $title = trim($_POST['title'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $priority = $_POST['priority'] ?? 'Medium';
-        $isCompleted = isset($_POST['is_completed']) ? 1 : 0; 
+    // 1. Проверка прав
+    if (!$task || (int)$task['user_id'] !== Auth::userId()) {
+        // Если это API-запрос (POST), возвращаем JSON-ошибку
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+             header('Content-Type: application/json');
+             header('HTTP/1.1 404 Not Found');
+             echo json_encode(['status' => 'error', 'message' => 'Task not found or unauthorized.']);
+             exit;
+        }
+        // Иначе (для GET) редирект (используем ваш существующий метод редиректа)
+        return $this->redirect('/', 'Task not found or unauthorized.', 'error');
+    }
+
+    // 2. ОБРАБОТКА АСИНХРОННОГО POST-ЗАПРОСА
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
+
+        // Чтение JSON-тела
+        $json_data = file_get_contents('php://input');
+        $data = json_decode($json_data, true);
+
+        $title = trim($data['title'] ?? '');
+        $description = trim($data['description'] ?? '');
+        $priority = $data['priority'] ?? 'Medium';
         
+        // Валидация
         if (empty($title)) {
-           
-            $taskModel = new TaskModel();
-            $task = $taskModel->getTaskById($id);
-            $this->render('task/edit', ['task' => $task, 'error' => 'Title cannot be empty.']);
-            return;
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(['status' => 'error', 'message' => 'Title is required.']);
+            exit;
         }
         
-        $taskModel = new TaskModel();
-        $taskModel->update($id, $title, $description, $priority, $isCompleted);
-        
-        header('Location: /'); 
+        try {
+            $success = $taskModel->updateTask($id, $title, $description, $priority); 
+
+            if ($success) {
+                header('HTTP/1.1 200 OK');
+                echo json_encode(['status' => 'success', 'message' => 'Task updated successfully!']);
+            } else {
+                 throw new \Exception("Database update failed.");
+            }
+
+        } catch (\Exception $e) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
+        }
+        // !!! КЛЮЧЕВОЙ МОМЕНТ: Прекращаем выполнение, чтобы не вызвать view() !!!
         exit;
     }
+
+    // 3. ОБРАБОТКА GET-ЗАПРОСА (Показ формы)
+    $this->view('task/edit', ['task' => $task]);
+}
 
     
     public function apiToggleComplete($id) { 

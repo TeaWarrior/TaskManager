@@ -27,20 +27,11 @@ class TaskModel {
         return $this->db->query($sql, [$title, $description, $priority, $userId]);
     }
 
-    public function update($id, $title, $description, $priority, $isCompleted) {
-  
-    $sql = "UPDATE tasks SET title = ?, description = ?, priority = ?, is_completed = ?"; 
-    $params = [$title, $description, $priority, (int)$isCompleted];
+   public function updateTask($id, $title, $description, $priority) {
     
-    if ((int)$isCompleted === 1) {
-        
-        $sql .= ", completed_at = NOW()";
-    } else {
-        $sql .= ", completed_at = NULL";
-    }
-    $sql .= " WHERE id = ?";
-    $params[] = $id; 
-    return $this->db->query($sql, $params);
+    $sql = "UPDATE tasks SET title = ?, description = ?, priority = ? WHERE id = ?";
+    $params = [$title, $description, $priority, $id];
+    return $this->db->query($sql, $params); 
     }
 
     public function delete($id) {
